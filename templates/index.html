@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+    table, th, td {
+    outline: 1px solid black; /* Sets a 1px solid black border */
+    color:red;
+    }
+    
+</style>
+<head>
+    <title>Tic-Tac-Toe</title>
+</head>
+<body>
+    <h1>Welcome to Tic-Tac-Toe!</h1>
+    <table>
+      {% for row in board %}
+      <tr>
+        {% for cell in row %}
+        <td style="width:50px; height:50px; text-align:center">{{ cell }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </table>
+    <p>hi</p>
+</body>
+</html>
