@@ -1,15 +1,15 @@
-# Create a 3x3 board
-board = [[" x " for _ in range(3)] for _ in range(3)]
+from flask import Flask, render_template, request, redirect, url_for
 
-# Function to print the board in the terminal
-def print_board():
-    for row in board:
-        print("|".join(row))
-    print()
+app = Flask(__name__)
+
+# --- Game Logic ---
+board = [[" - " for _ in range(3)] for _ in range(3)]
+current_player = "X"
+game_won = ""
 
 # Place a move
 def place_move(player, row, col):
-    if board[row][col] != " ":
+    if board[row][col] != " - ":
         return False
     board[row][col] = player
     return True
@@ -31,16 +31,35 @@ def check_win(player):
 
 # Check for a draw
 def check_draw():
-    return all(cell != " " for row in board for cell in row)
+    return all(cell != " - " for row in board for cell in row)
 
-from flask import Flask, render_template
-
-app = Flask(__name__)
-
+# --- Flask Routes ---
 @app.route('/')
 def home():
-    # Display the board in an HTML template
-    return render_template("index.html", board=board)
+    return render_template("index.html", board=board, game_won=game_won)
+
+@app.route('/reset')
+def reset():
+    global board, current_player
+    board = [[" - " for _ in range(3)] for _ in range(3)]
+    current_player = "X"
+    return redirect(url_for("home"))
+
+@app.route('/move/<int:row>/<int:col>')
+def move(row, col):
+    global current_player
+    global game_won
+
+    if check_win("X"):
+        game_won="X"
+    elif check_win("O"):
+        game_won="O"
+    elif check_draw():
+        game_won="draw"
+    elif board[row][col] == " - ":
+        place_move(current_player, row, col)
+        current_player = "O" if current_player == "X" else "X"
+    return redirect(url_for("home"))#render_template("index.html", board=board)
 
 if __name__ == '__main__':
     app.run(debug=True)
